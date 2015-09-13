@@ -1,38 +1,22 @@
 // main.rs
 
+extern crate sdl2;
+
 mod action;
 mod board;
+mod gui;
 mod tile;
 
 use action::SudokuAction;
 use board::Board;
+use gui::Gui;
 
 type History = Vec<Board>;
 
-fn read_input(iter: u32) -> SudokuAction {
-    if iter == 0 {
-        SudokuAction::AssignValue(0,0,1)
-    } else if iter == 1 {
-        SudokuAction::CrossOutValue(1,1,2)
-    } else if iter == 2 {
-        SudokuAction::Undo
-    } else if iter == 3 {
-        SudokuAction::Undo
-    } else if iter == 4 {
-        SudokuAction::Redo
-    } else {
-        SudokuAction::Quit
-    }
-}
-
-fn redraw_world(b: &Board) {
-    b.print();
-}
-
 fn main() {
+    let mut gui = Gui::new();
     let mut quit = false;
     let mut redraw = true;
-    let mut iter = 0;
 
     let mut h: History = Vec::new();
     let mut curr_history: usize = 0;
@@ -42,7 +26,8 @@ fn main() {
         assert!(curr_history < h.len());
         let old_history = curr_history;
 
-        match read_input(iter) {
+        match gui.read_input() {
+            SudokuAction::NoOp => {},
             SudokuAction::Quit => quit = true,
 
             SudokuAction::Undo =>
@@ -79,11 +64,8 @@ fn main() {
         }
 
         if redraw {
-            redraw_world(&h[curr_history]);
+            gui.redraw(&h[curr_history]);
             redraw = false;
         }
-
-        // dodgy.
-        iter = iter + 1;
     }
 }

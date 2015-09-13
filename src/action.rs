@@ -1,6 +1,7 @@
 // action.rs
 
 pub enum SudokuAction {
+    NoOp,
     Quit,
     Undo,
     Redo,
