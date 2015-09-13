@@ -9,4 +9,6 @@ fn main() {
     let b = Board::new();
     let b2 = b.assign_value(0,0,1).unwrap();
     b2.print();
+    let b3 = b2.cross_out_value(1,1,2).unwrap();
+    b3.print();
 }

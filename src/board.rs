@@ -43,6 +43,27 @@ impl Board {
         }
     }
 
+    fn is_valid_cross_out_value(&self, x: u8, y: u8, v: u8) -> bool {
+        self.tiles.iter().all(|t| t.is_valid_cross_out_value(x, y, v))
+    }
+
+    pub fn cross_out_value(&self, x: u8, y: u8, v: u8) -> Option<Board> {
+        if self.is_valid_cross_out_value(x, y, v) {
+            let mut ts: Vec<Tile> = Vec::new();
+
+            for old_t in self.tiles.iter() {
+                let new_t = old_t.cross_out_value(x, y, v);
+                ts.push(new_t);
+            }
+
+            Some(Board {
+                tiles: ts
+            })
+        } else {
+            None
+        }
+    }
+
     pub fn print(&self) {
         for t in self.tiles.iter() {
             t.print();

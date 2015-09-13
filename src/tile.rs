@@ -59,6 +59,37 @@ impl Tile {
         }
     }
 
+    pub fn is_valid_cross_out_value(&self, x: u8, y: u8, value: u8) -> bool {
+        return if x < 9 && y < 9 && (1 <= value && value <= 9) {
+            if self.x == x && self.y == y {
+                self.assignment.is_none()
+                && self.candidates.iter().any(|&v| v == value)
+            } else {
+                true
+            }
+        } else {
+            false
+        }
+    }
+
+    pub fn cross_out_value(&self, x: u8, y: u8, value: u8) -> Tile {
+        assert!(x < 9 && y < 9 && (1 <= value && value <= 9));
+        let mut vs = self.candidates.clone();
+
+        if self.x == x && self.y == y {
+            assert!(self.assignment.is_none()
+                    || self.assignment.unwrap() != value);
+            vs.retain(|&v| v != value);
+        }
+
+        Tile {
+            x: self.x,
+            y: self.y,
+            assignment: self.assignment,
+            candidates: vs
+        }
+    }
+
     pub fn print(&self) {
         println!("{} {}: {:?}", self.y, self.x, self.candidates);
     }
