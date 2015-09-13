@@ -2,6 +2,8 @@
 
 pub enum SudokuAction {
     Quit,
+    Undo,
+    Redo,
 
     // AssignValue(x,y,v)
     AssignValue(u8,u8,u8),
