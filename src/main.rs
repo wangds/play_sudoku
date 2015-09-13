@@ -7,5 +7,6 @@ use board::Board;
 
 fn main() {
     let b = Board::new();
-    b.print();
+    let b2 = b.assign_value(0,0,1).unwrap();
+    b2.print();
 }
