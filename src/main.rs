@@ -1,3 +1,11 @@
+// main.rs
+
+mod board;
+mod tile;
+
+use board::Board;
+
 fn main() {
-    println!("Hello, world!");
+    let b = Board::new();
+    b.print();
 }
