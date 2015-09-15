@@ -64,10 +64,12 @@ impl Board {
         }
     }
 
+    /*
     pub fn print(&self) {
         for t in self.tiles.iter() {
             t.print();
         }
         println!("");
     }
+    */
 }

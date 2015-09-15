@@ -90,7 +90,9 @@ impl Tile {
         }
     }
 
+    /*
     pub fn print(&self) {
         println!("{} {}: {:?}", self.y, self.x, self.candidates);
     }
+    */
 }

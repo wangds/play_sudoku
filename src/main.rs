@@ -1,9 +1,11 @@
 // main.rs
 
 extern crate sdl2;
+extern crate sdl2_image;
 
 mod action;
 mod board;
+mod gfx;
 mod gui;
 mod tile;
 
@@ -16,7 +18,6 @@ type History = Vec<Board>;
 fn main() {
     let mut gui = Gui::new();
     let mut quit = false;
-    let mut redraw = true;
 
     let mut h: History = Vec::new();
     let mut curr_history: usize = 0;
@@ -24,7 +25,6 @@ fn main() {
 
     while !quit {
         assert!(curr_history < h.len());
-        let old_history = curr_history;
 
         match gui.read_input() {
             SudokuAction::NoOp => {},
@@ -59,13 +59,6 @@ fn main() {
                 }
         }
 
-        if curr_history != old_history {
-            redraw = true;
-        }
-
-        if redraw {
-            gui.redraw(&h[curr_history]);
-            redraw = false;
-        }
+        gui.draw_to_screen(&h[curr_history]);
     }
 }
