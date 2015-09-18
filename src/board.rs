@@ -64,6 +64,10 @@ impl Board {
         }
     }
 
+    pub fn get(&self, x: u8, y: u8) -> Option<&Tile> {
+        self.tiles.iter().find(|t| t.x == x && t.y == y)
+    }
+
     /*
     pub fn print(&self) {
         for t in self.tiles.iter() {

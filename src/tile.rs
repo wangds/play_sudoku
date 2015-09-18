@@ -1,10 +1,10 @@
 // tile.rs
 
 pub struct Tile {
-    x: u8,
-    y: u8,
-    assignment: Option<u8>,
-    candidates: Vec<u8>
+    pub x: u8,
+    pub y: u8,
+    pub assignment: Option<u8>,
+    pub candidates: Vec<u8>
 }
 
 impl Tile {
@@ -89,6 +89,28 @@ impl Tile {
             candidates: vs
         }
     }
+
+    pub fn is_init(&self) -> bool {
+        false
+    }
+
+    pub fn is_guess(&self) -> bool {
+        if let Some(value) = self.assignment {
+            self.candidates.iter().any(|&v| v == value)
+        } else {
+            false
+        }
+    }
+
+    /*
+    pub fn is_conflict(&self) -> bool {
+        if let Some(value) = self.assignment {
+            self.candidates.iter().all(|&v| v != value)
+        } else {
+            false
+        }
+    }
+    */
 
     /*
     pub fn print(&self) {

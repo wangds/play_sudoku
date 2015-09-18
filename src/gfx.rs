@@ -18,8 +18,13 @@ pub enum Res {
     ToolbarInactiveCrossOut,
     ToolbarActiveNumber(u8),
     ToolbarInactiveNumber(u8),
+    TileInit(u8),
+    TileGuess(u8),
+    TileConflict(u8),
 }
 
+pub const TILE_NUMBER_HEIGHT: u32 = 15;
+pub const TILE_NUMBER_WIDTH: u32 = 15;
 pub const TOOLBAR_BUTTON_HEIGHT: u32 = 9;
 pub const TOOLBAR_BUTTON_WIDTH: u32 = 53;
 pub const TOOLBAR_NUMBER_WIDTH: u32 = 13;
@@ -63,6 +68,17 @@ impl<'a> GfxLib<'a> {
                     Rect::new_unwrap(x, 30, TOOLBAR_NUMBER_WIDTH, TOOLBAR_BUTTON_HEIGHT));
             lib.insert(Res::ToolbarInactiveNumber(v),
                     Rect::new_unwrap(x, 40, TOOLBAR_NUMBER_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+        }
+
+        for v in 1..9+1 {
+            let x = (TILE_NUMBER_WIDTH * (v - 1)) as i32;
+
+            lib.insert(Res::TileInit(v as u8),
+                    Rect::new_unwrap(x, 50, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT));
+            lib.insert(Res::TileGuess(v as u8),
+                    Rect::new_unwrap(x, 65, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT));
+            lib.insert(Res::TileConflict(v as u8),
+                    Rect::new_unwrap(x, 80, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT));
         }
 
         GfxLib {

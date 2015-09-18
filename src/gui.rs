@@ -13,6 +13,7 @@ use sdl2_image::INIT_PNG;
 use action::SudokuAction;
 use board::Board;
 use gfx::*;
+use tile::Tile;
 
 const SCREEN_WIDTH: u32 = 320;
 const SCREEN_HEIGHT: u32 = 200;
@@ -26,6 +27,9 @@ enum Brush {
 enum WidgetType {
     Undo,
     Redo,
+
+    // Tile(x,y)
+    Tile(u8,u8),
 
     // ToolbarBrush(value,active,inactive)
     ToolbarBrush(Brush,Res,Res),
@@ -81,12 +85,17 @@ impl<'a> Gui<'a> {
     fn make_widgets() -> Vec<Widget> {
         let mut ws = Vec::new();
         let y = (SCREEN_HEIGHT as i32) - (TOOLBAR_BUTTON_HEIGHT as i32) - 3;
+
+        let toolbar_spacing = (TOOLBAR_NUMBER_WIDTH - 1) as i32;
+        let board_x_spacing = TILE_NUMBER_WIDTH + 4;
+        let board_y_spacing = TILE_NUMBER_HEIGHT + 4;
+
         let x_undo = (3 + TOOLBAR_BUTTON_WIDTH + 3) as i32;
         let x_redo = x_undo + (TOOLBAR_UNDO_REDO_WIDTH + 2) as i32;
-        let toolbar_spacing = (TOOLBAR_NUMBER_WIDTH - 1) as i32;
         let x_1 = (SCREEN_WIDTH as i32) - toolbar_spacing * 9 - 4;
         let x_crossout = (x_redo + (TOOLBAR_UNDO_REDO_WIDTH as i32) + x_1) / 2 + 2;
         let x_pencil = x_crossout - (TOOLBAR_BUTTON_WIDTH as i32) - 2;
+        let (board_x, board_y) = Gui::calc_board_xy();
 
         // undo
         ws.push(Widget {
@@ -114,6 +123,18 @@ impl<'a> Gui<'a> {
                 rect: Rect::new_unwrap(x_crossout, y, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT)
                 });
 
+        // tiles
+        for row in 0..9 {
+            for col in 0..9 {
+                let x = board_x + (3 + board_x_spacing * col) as i32;
+                let y = board_y + (3 + board_y_spacing * row) as i32;
+                ws.push(Widget {
+                            mode: WidgetType::Tile(col as u8, row as u8),
+                            rect: Rect::new_unwrap(x, y, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT)
+                        })
+            }
+        }
+
         // toolbar
         for v in 1..9+1 {
             let x = x_1 + toolbar_spacing * (v as i32 - 1);
@@ -126,6 +147,14 @@ impl<'a> Gui<'a> {
         }
 
         ws
+    }
+
+    fn calc_board_xy() -> (i32, i32) {
+        let board_x_spacing = TILE_NUMBER_WIDTH + 4;
+        let board_y_spacing = TILE_NUMBER_HEIGHT + 4;
+        let x0 = (SCREEN_WIDTH - board_x_spacing * 9 - 2) / 2;
+        let y0 = (SCREEN_HEIGHT - TOOLBAR_BUTTON_HEIGHT - 6 - board_y_spacing * 9 - 2) / 2;
+        (x0 as i32, y0 as i32)
     }
 
     pub fn read_input(&mut self) -> SudokuAction {
@@ -187,6 +216,23 @@ impl<'a> Gui<'a> {
         self.gfx.renderer.set_draw_color(colour_white);
         self.gfx.renderer.clear();
 
+        // board
+        self.gfx.renderer.set_draw_color(colour_light_grey);
+        for &y in [1,2,4,5,7,8].iter() {
+            Gui::draw_board_hline(&mut self.gfx, y);
+        }
+        for &x in [1,2,4,5,7,8].iter() {
+            Gui::draw_board_vline(&mut self.gfx, x);
+        }
+
+        self.gfx.renderer.set_draw_color(colour_dark_grey);
+        for &y in [0,3,6,9].iter() {
+            Gui::draw_board_hline(&mut self.gfx, y);
+        }
+        for &x in [0,3,6,9].iter() {
+            Gui::draw_board_vline(&mut self.gfx, x);
+        }
+
         // toolbar
         self.gfx.renderer.set_draw_color(colour_light_grey);
         self.gfx.renderer.fill_rect(toolbar_rect);
@@ -204,10 +250,45 @@ impl<'a> Gui<'a> {
         self.redraw = false;
     }
 
-    fn draw_widget(gfx: &mut GfxLib, widget: &Widget, _: &Board, state: &GuiState) {
+    fn draw_board_hline(gfx: &mut GfxLib, y: u32) {
+        let board_x_spacing = TILE_NUMBER_WIDTH + 4;
+        let board_y_spacing = TILE_NUMBER_HEIGHT + 4;
+        let (board_x, board_y) = Gui::calc_board_xy();
+
+        let hline = Rect::new_unwrap(
+                board_x,
+                board_y + (board_y_spacing * y) as i32,
+                2 + board_x_spacing * 9,
+                2);
+
+        gfx.renderer.fill_rect(hline);
+    }
+
+    fn draw_board_vline(gfx: &mut GfxLib, x: u32) {
+        let board_x_spacing = TILE_NUMBER_WIDTH + 4;
+        let board_y_spacing = TILE_NUMBER_HEIGHT + 4;
+        let (board_x, board_y) = Gui::calc_board_xy();
+
+        let vline = Rect::new_unwrap(
+                board_x + (board_x_spacing * x) as i32,
+                board_y,
+                2,
+                2 + board_y_spacing * 9);
+
+        gfx.renderer.fill_rect(vline);
+    }
+
+    fn draw_widget(gfx: &mut GfxLib, widget: &Widget, board: &Board, state: &GuiState) {
         let res = match widget.mode {
             WidgetType::Undo => Res::ToolbarUndo,
             WidgetType::Redo => Res::ToolbarRedo,
+
+            WidgetType::Tile(x,y) => {
+                if let Some(t) = board.get(x,y) {
+                    Gui::draw_tile(gfx, t, widget.rect);
+                }
+                return;
+            },
 
             WidgetType::ToolbarBrush(b,active,inactive) =>
                 if state.selected_brush == b {
@@ -225,6 +306,38 @@ impl<'a> Gui<'a> {
         };
 
         gfx.draw(res, widget.rect);
+    }
+
+    fn draw_tile(gfx: &mut GfxLib, tile: &Tile, dst: Rect) {
+        if let Some(v) = tile.assignment {
+            let res =
+                if tile.is_init() {
+                    Res::TileInit(v)
+                } else if tile.is_guess() {
+                    Res::TileGuess(v)
+                } else {
+                    Res::TileConflict(v)
+                };
+            gfx.draw(res, dst);
+        } else {
+            let x_spacing: u32 = 3;
+            let y_spacing: u32 = 3;
+            let x0 = dst.x() + (dst.width() / 2 - x_spacing) as i32;
+            let y0 = dst.y() + (dst.height() / 2 - y_spacing) as i32;
+
+            for &v in tile.candidates.iter() {
+                if 1 <= v && v <= 9 {
+                    let x = (v - 1) % 3;
+                    let y = 2 - (v - 1) / 3;
+
+                    gfx.renderer.fill_rect(Rect::new_unwrap(
+                            x0 + (x_spacing * x as u32) as i32,
+                            y0 + (y_spacing * y as u32) as i32,
+                            1,
+                            1));
+                }
+            }
+        }
     }
 }
 
