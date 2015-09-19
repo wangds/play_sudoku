@@ -43,6 +43,36 @@ impl Board {
         }
     }
 
+    fn is_valid_unassign_value(&self, x: u8, y: u8) -> bool {
+        self.tiles.iter().all(|t| t.is_valid_unassign_value(x, y))
+    }
+
+    pub fn unassign_value(&self, x: u8, y: u8) -> Option<Board> {
+        if self.is_valid_unassign_value(x, y) {
+            let mut ts = Vec::new();
+
+            for t in self.tiles.iter() {
+                ts.push(Tile::new_with_eliminated(t))
+            }
+
+            let mut b = Board {
+                tiles: ts
+            };
+
+            for t in self.tiles.iter() {
+                if !(t.x == x && t.y == y) {
+                    if let Some(v) = t.assignment {
+                        b = b.assign_value(t.x, t.y, v).unwrap();
+                    }
+                }
+            }
+
+            Some(b)
+        } else {
+            None
+        }
+    }
+
     fn is_valid_cross_out_value(&self, x: u8, y: u8, v: u8) -> bool {
         self.tiles.iter().all(|t| t.is_valid_cross_out_value(x, y, v))
     }

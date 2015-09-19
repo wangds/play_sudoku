@@ -4,7 +4,12 @@ pub struct Tile {
     pub x: u8,
     pub y: u8,
     pub assignment: Option<u8>,
-    pub candidates: Vec<u8>
+
+    // true list of potential values in this tile
+    pub candidates: Vec<u8>,
+
+    // list of values the player has crossed out
+    pub eliminated: Vec<u8>
 }
 
 impl Tile {
@@ -13,20 +18,26 @@ impl Tile {
             x: x,
             y: y,
             assignment: None,
-            candidates: vec![1,2,3,4,5,6,7,8,9]
+            candidates: vec![1,2,3,4,5,6,7,8,9],
+            eliminated: Vec::new()
+        }
+    }
+
+    pub fn new_with_eliminated(tile: &Tile) -> Tile {
+        Tile {
+            x: tile.x,
+            y: tile.y,
+            assignment: None,
+            candidates: vec![1,2,3,4,5,6,7,8,9],
+            eliminated: tile.eliminated.clone()
         }
     }
 
     pub fn is_valid_assign_value(&self, x: u8, y: u8, value: u8) -> bool {
-        return if x < 9 && y < 9 && (1 <= value && value <= 9) {
-            if self.x == x && self.y == y {
-                self.assignment.is_none()
-            } else {
-                true
-            }
-        } else {
-            false
-        }
+        return x < 9 && y < 9 && (1 <= value && value <= 9)
+            && (self.x != x
+                    || self.y != y
+                    || self.assignment.is_none());
     }
 
     pub fn assign_value(&self, x: u8, y: u8, value: u8) -> Tile {
@@ -41,7 +52,8 @@ impl Tile {
                 x: self.x,
                 y: self.y,
                 assignment: Some(value),
-                candidates: vs
+                candidates: vs,
+                eliminated: self.eliminated.clone()
             }
         } else {
             if self.x == x
@@ -54,39 +66,44 @@ impl Tile {
                 x: self.x,
                 y: self.y,
                 assignment: self.assignment,
-                candidates: vs
+                candidates: vs,
+                eliminated: self.eliminated.clone()
             }
         }
     }
 
+    pub fn is_valid_unassign_value(&self, x: u8, y: u8) -> bool {
+        return x < 9 && y < 9
+            && (self.x != x
+                || self.y != y
+                || self.assignment.is_some());
+    }
+
     pub fn is_valid_cross_out_value(&self, x: u8, y: u8, value: u8) -> bool {
-        return if x < 9 && y < 9 && (1 <= value && value <= 9) {
-            if self.x == x && self.y == y {
-                self.assignment.is_none()
-                && self.candidates.iter().any(|&v| v == value)
-            } else {
-                true
-            }
-        } else {
-            false
-        }
+        return x < 9 && y < 9 && (1 <= value && value <= 9)
+            && (self.x != x
+                || self.y != y
+                || (self.assignment.is_none()
+                    && self.candidates.iter().any(|&v| v == value)
+                    && self.eliminated.iter().all(|&v| v != value)))
     }
 
     pub fn cross_out_value(&self, x: u8, y: u8, value: u8) -> Tile {
         assert!(x < 9 && y < 9 && (1 <= value && value <= 9));
-        let mut vs = self.candidates.clone();
+        let mut vs = self.eliminated.clone();
 
         if self.x == x && self.y == y {
             assert!(self.assignment.is_none()
                     || self.assignment.unwrap() != value);
-            vs.retain(|&v| v != value);
+            vs.push(value);
         }
 
         Tile {
             x: self.x,
             y: self.y,
             assignment: self.assignment,
-            candidates: vs
+            candidates: self.candidates.clone(),
+            eliminated: vs
         }
     }
 

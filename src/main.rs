@@ -49,6 +49,15 @@ fn main() {
                     curr_history = h.len() - 1;
                 },
 
+            SudokuAction::UnassignValue(x,y) =>
+                if let Some(new_b) = h[curr_history].unassign_value(x, y) {
+                    while h.len() > curr_history + 1 {
+                        h.pop();
+                    }
+                    h.push(new_b);
+                    curr_history = h.len() - 1;
+                },
+
             SudokuAction::CrossOutValue(x,y,v) =>
                 if let Some(new_b) = h[curr_history].cross_out_value(x, y, v) {
                     while h.len() > curr_history + 1 {

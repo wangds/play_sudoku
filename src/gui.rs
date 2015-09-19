@@ -179,10 +179,12 @@ impl<'a> Gui<'a> {
                         }
                     },
 
-                Event::MouseButtonDown { mouse_btn: Mouse::Right, .. } =>
-                    match self.state.on_rmb() {
-                        SudokuAction::NoOp => {},
-                        a => return a
+                Event::MouseButtonDown { mouse_btn: Mouse::Right, x, y, .. } =>
+                    if let Some(w) = Gui::find_widget(&self.widgets, x, y) {
+                        match self.state.on_rmb(&w) {
+                            SudokuAction::NoOp => {},
+                            a => return a
+                        }
                     },
 
                 Event::MouseButtonDown { mouse_btn: Mouse::Unknown(8), .. } =>
@@ -354,7 +356,8 @@ impl<'a> Gui<'a> {
             let colour_dark_grey = Color::RGB(0x58, 0x58, 0x58);
             gfx.renderer.set_draw_color(colour_dark_grey);
 
-            for &v in tile.candidates.iter() {
+            for &v in tile.candidates.iter().filter(
+                    |&&v1| tile.eliminated.iter().all(|&v2| v1 != v2)) {
                 if 1 <= v && v <= 9 {
                     let x = (v - 1) % 3;
                     let y = 2 - (v - 1) / 3;
@@ -425,8 +428,11 @@ impl GuiState {
         SudokuAction::NoOp
     }
 
-    fn on_rmb(&mut self) -> SudokuAction {
-        SudokuAction::NoOp
+    fn on_rmb(&mut self, widget: &Widget) -> SudokuAction {
+        match widget.mode {
+            WidgetType::Tile(x,y) => SudokuAction::UnassignValue(x,y),
+            _ => SudokuAction::NoOp
+        }
     }
 
     fn on_wheel(&mut self, delta: i32) {
