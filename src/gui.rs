@@ -309,6 +309,14 @@ impl<'a> Gui<'a> {
     }
 
     fn draw_tile(gfx: &mut GfxLib, tile: &Tile, dst: Rect) {
+        // chequer pattern
+        if (tile.x + tile.y) % 2 != 0 {
+            let colour_rose = Color::RGB(0xC2, 0xBC, 0xBC);
+            gfx.renderer.set_draw_color(colour_rose);
+            gfx.renderer.fill_rect(Rect::new_unwrap(
+                    dst.x() - 1, dst.y() - 1, dst.width() + 2, dst.height() + 2));
+        }
+
         if let Some(v) = tile.assignment {
             let res =
                 if tile.is_init() {
@@ -324,6 +332,8 @@ impl<'a> Gui<'a> {
             let y_spacing: u32 = 3;
             let x0 = dst.x() + (dst.width() / 2 - x_spacing) as i32;
             let y0 = dst.y() + (dst.height() / 2 - y_spacing) as i32;
+            let colour_dark_grey = Color::RGB(0x58, 0x58, 0x58);
+            gfx.renderer.set_draw_color(colour_dark_grey);
 
             for &v in tile.candidates.iter() {
                 if 1 <= v && v <= 9 {
