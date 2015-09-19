@@ -1,5 +1,6 @@
 // gui.rs
 
+use std::cmp::{max,min};
 use sdl2;
 use sdl2::EventPump;
 use sdl2::event::Event;
@@ -170,10 +171,12 @@ impl<'a> Gui<'a> {
                         a => return a
                     },
 
-                Event::MouseButtonDown { mouse_btn: Mouse::Left, .. } =>
-                    match self.state.on_lmb() {
-                        SudokuAction::NoOp => {},
-                        a => return a
+                Event::MouseButtonDown { mouse_btn: Mouse::Left, x, y, .. } =>
+                    if let Some(w) = Gui::find_widget(&self.widgets, x, y) {
+                        match self.state.on_lmb(&w) {
+                            SudokuAction::NoOp => return SudokuAction::NoOp,
+                            a => return a
+                        }
                     },
 
                 Event::MouseButtonDown { mouse_btn: Mouse::Right, .. } =>
@@ -181,6 +184,15 @@ impl<'a> Gui<'a> {
                         SudokuAction::NoOp => {},
                         a => return a
                     },
+
+                Event::MouseButtonDown { mouse_btn: Mouse::Unknown(8), .. } =>
+                    return SudokuAction::Undo,
+
+                Event::MouseButtonDown { mouse_btn: Mouse::Unknown(9), .. } =>
+                    return SudokuAction::Redo,
+
+                Event::MouseWheel { y, .. } =>
+                    self.state.on_wheel(y),
 
                 _ => {}
             }
@@ -190,6 +202,13 @@ impl<'a> Gui<'a> {
         }
 
         SudokuAction::NoOp
+    }
+
+    fn find_widget(widgets: &Vec<Widget>, x: i32, y: i32) -> Option<&Widget> {
+        widgets.iter().find(|w| {
+                let r = &w.rect;
+                r.x() <= x && x <= r.x() + (r.width() as i32)
+                && r.y() <= y && y <= r.y() + (r.height() as i32) })
     }
 
     pub fn draw_to_screen(&mut self, board: &Board) {
@@ -383,15 +402,34 @@ impl GuiState {
         SudokuAction::NoOp
     }
 
-    fn on_lmb(&mut self) -> SudokuAction {
-        let x = 0;
-        let y = 0;
-        return SudokuAction::AssignValue(x, y, self.selected_value);
+    fn on_lmb(&mut self, widget: &Widget) -> SudokuAction {
+        match widget.mode {
+            WidgetType::Undo => return SudokuAction::Undo,
+            WidgetType::Redo => return SudokuAction::Redo,
+
+            WidgetType::Tile(x,y) =>
+                match self.selected_brush {
+                    Brush::Pencil => return SudokuAction::AssignValue(
+                            x, y, self.selected_value),
+                    Brush::CrossOut => return SudokuAction::CrossOutValue(
+                            x, y, self.selected_value)
+                },
+
+            WidgetType::ToolbarBrush(brush,_,_) =>
+                self.selected_brush = brush,
+
+            WidgetType::ToolbarNumber(value) =>
+                self.selected_value = value
+        }
+
+        SudokuAction::NoOp
     }
 
     fn on_rmb(&mut self) -> SudokuAction {
-        let x = 0;
-        let y = 0;
-        return SudokuAction::CrossOutValue(x, y, self.selected_value);
+        SudokuAction::NoOp
+    }
+
+    fn on_wheel(&mut self, delta: i32) {
+        self.selected_value = max(1, min(self.selected_value as i32 + delta, 9)) as u8;
     }
 }
