@@ -10,6 +10,7 @@ use sdl2::keyboard::Keycode;
 use sdl2::mouse::Mouse;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
+use sdl2::video::FullscreenType;
 use sdl2_image;
 use sdl2_image::INIT_PNG;
 
@@ -17,6 +18,9 @@ use action::SudokuAction;
 use board::Board;
 use gfx::*;
 use tile::Tile;
+
+// FIXME - not sure what to import.
+const SDL_WINDOW_FULLSCREEN_DESKTOP: u32 = 0x1001;
 
 const MIN_TOOLBAR_WIDTH: u32
     = 3
@@ -268,6 +272,18 @@ impl<'a> Gui<'a> {
 
                 Event::Window { win_event_id: WindowEventId::Resized, data1, data2, .. } =>
                     self.resize = Some((data1 as u32, data2 as u32)),
+
+                Event::KeyDown { keycode: Some(Keycode::F11), .. } => {
+                    let mut window = self.gfx.renderer.window_mut().unwrap();
+
+                    if window.window_flags() & SDL_WINDOW_FULLSCREEN_DESKTOP != 0 {
+                        window.set_fullscreen(FullscreenType::Off).unwrap();
+                    } else {
+                        window.set_fullscreen(FullscreenType::Desktop).unwrap();
+                    }
+
+                    return SudokuAction::NoOp
+                },
 
                 Event::KeyDown { keycode: Some(k), .. } =>
                     match self.state.on_key_down(k) {
