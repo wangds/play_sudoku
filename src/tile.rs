@@ -3,6 +3,7 @@
 pub struct Tile {
     pub x: u8,
     pub y: u8,
+    pub init: bool,
     pub assignment: Option<u8>,
 
     // true list of potential values in this tile
@@ -17,6 +18,7 @@ impl Tile {
         Tile {
             x: x,
             y: y,
+            init: false,
             assignment: None,
             candidates: vec![1,2,3,4,5,6,7,8,9],
             eliminated: Vec::new()
@@ -27,6 +29,7 @@ impl Tile {
         Tile {
             x: tile.x,
             y: tile.y,
+            init: false,
             assignment: None,
             candidates: vec![1,2,3,4,5,6,7,8,9],
             eliminated: tile.eliminated.clone()
@@ -40,7 +43,7 @@ impl Tile {
                     || self.assignment.is_none());
     }
 
-    pub fn assign_value(&self, x: u8, y: u8, value: u8) -> Tile {
+    pub fn assign_value(&self, x: u8, y: u8, value: u8, init: bool) -> Tile {
         assert!(x < 9 && y < 9 && (1 <= value && value <= 9));
         let mut vs = self.candidates.clone();
 
@@ -51,6 +54,7 @@ impl Tile {
             Tile {
                 x: self.x,
                 y: self.y,
+                init: init,
                 assignment: Some(value),
                 candidates: vs,
                 eliminated: self.eliminated.clone()
@@ -65,6 +69,7 @@ impl Tile {
             Tile {
                 x: self.x,
                 y: self.y,
+                init: self.init,
                 assignment: self.assignment,
                 candidates: vs,
                 eliminated: self.eliminated.clone()
@@ -76,14 +81,15 @@ impl Tile {
         return x < 9 && y < 9
             && (self.x != x
                 || self.y != y
-                || self.assignment.is_some());
+                || (!self.init && self.assignment.is_some()));
     }
 
     pub fn is_valid_cross_out_value(&self, x: u8, y: u8, value: u8) -> bool {
         return x < 9 && y < 9 && (1 <= value && value <= 9)
             && (self.x != x
                 || self.y != y
-                || (self.assignment.is_none()
+                || (!self.init
+                    && self.assignment.is_none()
                     && self.candidates.iter().any(|&v| v == value)
                     && self.eliminated.iter().all(|&v| v != value)))
     }
@@ -101,6 +107,7 @@ impl Tile {
         Tile {
             x: self.x,
             y: self.y,
+            init: self.init,
             assignment: self.assignment,
             candidates: self.candidates.clone(),
             eliminated: vs
@@ -108,7 +115,7 @@ impl Tile {
     }
 
     pub fn is_init(&self) -> bool {
-        false
+        self.init
     }
 
     pub fn is_guess(&self) -> bool {

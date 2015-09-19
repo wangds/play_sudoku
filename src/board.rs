@@ -26,12 +26,12 @@ impl Board {
         self.tiles.iter().all(|t| t.is_valid_assign_value(x, y, v))
     }
 
-    pub fn assign_value(&self, x: u8, y: u8, v: u8) -> Option<Board> {
+    pub fn assign_value(&self, x: u8, y: u8, v: u8, init: bool) -> Option<Board> {
         if self.is_valid_assign_value(x, y, v) {
             let mut ts: Vec<Tile> = Vec::new();
 
             for old_t in self.tiles.iter() {
-                let new_t = old_t.assign_value(x, y, v);
+                let new_t = old_t.assign_value(x, y, v, init);
                 ts.push(new_t);
             }
 
@@ -62,7 +62,7 @@ impl Board {
             for t in self.tiles.iter() {
                 if !(t.x == x && t.y == y) {
                     if let Some(v) = t.assignment {
-                        b = b.assign_value(t.x, t.y, v).unwrap();
+                        b = b.assign_value(t.x, t.y, v, t.is_init()).unwrap();
                     }
                 }
             }

@@ -55,7 +55,7 @@ fn main() {
                 },
 
             SudokuAction::AssignValue(x,y,v) =>
-                if let Some(new_b) = h[curr_history].assign_value(x, y, v) {
+                if let Some(new_b) = h[curr_history].assign_value(x, y, v, false) {
                     while h.len() > curr_history + 1 {
                         h.pop();
                     }
@@ -115,7 +115,7 @@ fn load_board(file: &mut File) -> Option<Board> {
 
             '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' => {
                 let v = c.to_digit(10).unwrap() as u8;
-                if let Some(new_b) = board.assign_value(x, y, v) {
+                if let Some(new_b) = board.assign_value(x, y, v, true) {
                     board = new_b;
                     next_col = true;
                 } else {
