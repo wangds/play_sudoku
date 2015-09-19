@@ -3,6 +3,7 @@
 use std::cmp::{max,min};
 use sdl2;
 use sdl2::EventPump;
+use sdl2::TimerSubsystem;
 use sdl2::event::Event;
 use sdl2::event::WindowEventId;
 use sdl2::keyboard::Keycode;
@@ -57,12 +58,14 @@ enum WidgetType {
 
 pub struct Gui<'a> {
     gfx: GfxLib<'a>,
+    timer: TimerSubsystem,
     event_pump: EventPump,
     state: GuiState,
     widgets: Vec<Widget>,
 
     screen_size: ScreenSize,
     redraw: bool,
+    last_redraw: u32,
 
     // Some(new screen size) if need to relayout the widgets
     resize: Option<(u32,u32)>
@@ -99,15 +102,19 @@ impl<'a> Gui<'a> {
 
         let renderer = window.renderer().build().unwrap();
 
+        let timer = sdl.timer().unwrap();
+
         let event_pump = sdl.event_pump().unwrap();
 
         Gui {
             gfx: GfxLib::new(renderer),
+            timer: timer,
             event_pump: event_pump,
             state: GuiState::new(),
             widgets: Gui::make_widgets(screen_size),
             screen_size: screen_size,
             redraw: true,
+            last_redraw: 0,
             resize: None
         }
     }
@@ -247,7 +254,13 @@ impl<'a> Gui<'a> {
     }
 
     pub fn read_input(&mut self) -> SudokuAction {
-        let timeout: u32 = 1000 / 60;
+        let curr_ticks = self.timer.ticks();
+        if curr_ticks >= self.last_redraw + 1000 / 60 {
+            self.redraw = true;
+            return SudokuAction::NoOp;
+        }
+
+        let timeout = self.last_redraw + 1000 / 60 - curr_ticks;
         if let Some(e) = self.event_pump.wait_event_timeout(timeout) {
             match e {
                 Event::Quit {..} =>
@@ -289,9 +302,6 @@ impl<'a> Gui<'a> {
 
                 _ => {}
             }
-        } else {
-            // redraw if no events.
-            self.redraw = true;
         }
 
         SudokuAction::NoOp
@@ -360,6 +370,7 @@ impl<'a> Gui<'a> {
 
         self.gfx.renderer.present();
         self.redraw = false;
+        self.last_redraw = self.timer.ticks();
     }
 
     fn draw_board_hline(gfx: &mut GfxLib, screen_size: ScreenSize, y: u32) {
