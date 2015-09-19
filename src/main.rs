@@ -9,6 +9,11 @@ mod gfx;
 mod gui;
 mod tile;
 
+use std::env;
+use std::fs::File;
+use std::path::Path;
+use std::io::prelude::*;
+
 use action::SudokuAction;
 use board::Board;
 use gui::Gui;
@@ -17,11 +22,20 @@ type History = Vec<Board>;
 
 fn main() {
     let mut gui = Gui::new();
-    let mut quit = false;
-
     let mut h: History = Vec::new();
     let mut curr_history: usize = 0;
-    h.push(Board::new());
+    let mut quit = false;
+
+    if env::args().count() > 1 {
+        let filename = env::args().nth(1).unwrap();
+        if let Some(b) = load_puzzle(&filename) {
+            h.push(b);
+        }
+    }
+
+    if h.is_empty() {
+        h.push(Board::new());
+    }
 
     while !quit {
         assert!(curr_history < h.len());
@@ -70,4 +84,69 @@ fn main() {
 
         gui.draw_to_screen(&h[curr_history]);
     }
+}
+
+fn load_puzzle(filename: &String) -> Option<Board> {
+    let path = Path::new(filename);
+    match File::open(path) {
+        Ok(mut f) => load_board(&mut f),
+
+        Err(e) => {
+            println!("{}: {}", filename, e);
+            None
+        }
+    }
+}
+
+fn load_board(file: &mut File) -> Option<Board> {
+    let mut board = Board::new();
+    let mut x: u8 = 0;
+    let mut y: u8 = 0;
+
+    for b in file.bytes() {
+        let c = b.unwrap() as char;
+        let mut next_col = false;
+        let mut next_row = false;
+
+        match c {
+            '0' | '.' => {
+                next_col = true;
+            },
+
+            '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' => {
+                let v = c.to_digit(10).unwrap() as u8;
+                if let Some(new_b) = board.assign_value(x, y, v) {
+                    board = new_b;
+                    next_col = true;
+                } else {
+                    break;
+                }
+            },
+
+            '|' | '-' | ' ' | '\n' | '\t' => {
+                // ignored characters.
+            },
+
+            _ => {
+                // not a valid puzzle.
+                break;
+            }
+        }
+
+        if next_col {
+            x = x + 1;
+            if x >= 9 {
+                next_row = true;
+            }
+        }
+        if next_row {
+            x = 0;
+            y = y + 1;
+            if y >= 9 {
+                return Some(board)
+            }
+        }
+    }
+
+    None
 }
