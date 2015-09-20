@@ -316,6 +316,9 @@ impl<'a> Gui<'a> {
                 Event::MouseWheel { y, .. } =>
                     self.state.on_wheel(y),
 
+                Event::DropFile { filename, .. } =>
+                    return SudokuAction::New(Some(filename)),
+
                 _ => {}
             }
         }

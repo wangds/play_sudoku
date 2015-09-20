@@ -44,6 +44,19 @@ fn main() {
             SudokuAction::NoOp => {},
             SudokuAction::Quit => quit = true,
 
+            SudokuAction::New(Some(filename)) =>
+                if let Some(b) = load_puzzle(&filename) {
+                    h.clear();
+                    h.push(b);
+                    curr_history = h.len() - 1;
+                },
+
+            SudokuAction::New(None) => {
+                    h.clear();
+                    h.push(Board::new());
+                    curr_history = h.len() - 1;
+                },
+
             SudokuAction::Undo =>
                 if curr_history > 0 {
                     curr_history = curr_history - 1

@@ -3,6 +3,10 @@
 pub enum SudokuAction {
     NoOp,
     Quit,
+
+    // New(filename)
+    New(Option<String>),
+
     Undo,
     Redo,
 
