@@ -1,6 +1,7 @@
 // resource.rs
 
 use std::collections::HashMap;
+use std::env;
 use std::path::Path;
 use sdl2::rect::Rect;
 use sdl2::render::Renderer;
@@ -38,10 +39,9 @@ pub struct GfxLib<'a> {
 
 impl<'a> GfxLib<'a> {
     pub fn new(renderer: Renderer<'a>) -> GfxLib<'a> {
-        let bmp = Path::new("resource/sudoku.png");
-        let texture = match renderer.load_texture(bmp) {
-            Err(e) => panic!("{}", e),
-            Ok(t) => t
+        let texture = match GfxLib::load_texture(&renderer) {
+            None => panic!("Error loading sudoku.png"),
+            Some(t) => t
         };
 
         let mut lib = HashMap::new();
@@ -86,6 +86,27 @@ impl<'a> GfxLib<'a> {
             texture: texture,
             lib: lib
         }
+    }
+
+    fn load_texture(renderer: &Renderer<'a>) -> Option<Texture> {
+        let bmp = Path::new("resource/sudoku.png");
+        if let Ok(t) = renderer.load_texture(bmp) {
+            return Some(t);
+        }
+
+        match env::current_exe() {
+            Err(e) => println!("{}", e),
+
+            Ok(mut exe_path) => {
+                exe_path.set_file_name("sudoku.png");
+                match renderer.load_texture(exe_path.as_path()) {
+                    Err(e) => println!("{}", e),
+                    Ok(t) => return Some(t)
+                }
+            }
+        }
+
+        None
     }
 
     pub fn draw(&mut self, res: Res, dst: Rect) {
