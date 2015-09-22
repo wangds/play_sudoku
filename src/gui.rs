@@ -479,8 +479,8 @@ impl<'a> Gui<'a> {
         } else {
             let x_spacing: u32 = 3;
             let y_spacing: u32 = 3;
-            let x0 = dst.x() + (dst.width() / 2 - scale * x_spacing) as i32;
-            let y0 = dst.y() + (dst.height() / 2 - scale * y_spacing) as i32;
+            let x0 = dst.x() + ((dst.width() - scale * 1) / 2 - scale * x_spacing) as i32;
+            let y0 = dst.y() + ((dst.height() - scale * 1) / 2 - scale * y_spacing) as i32;
             let colour_dark_grey = Color::RGB(0x58, 0x58, 0x58);
             gfx.renderer.set_draw_color(colour_dark_grey);
 
