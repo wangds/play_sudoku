@@ -98,6 +98,52 @@ impl Board {
         self.tiles.iter().find(|t| t.x == x && t.y == y)
     }
 
+    pub fn is_unique(&self, tile: &Tile, value: u8) -> bool {
+        tile.is_remaining_candidate(value)
+            || self.is_unique_in_row(tile.x, tile.y, value)
+            || self.is_unique_in_col(tile.x, tile.y, value)
+            || self.is_unique_in_block(tile.x, tile.y, value)
+    }
+
+    fn is_unique_in_row(&self, x: u8, y: u8, value: u8) -> bool {
+        for t in self.tiles.iter() {
+            if t.y == y
+                && t.x != x
+                && t.candidates.iter().any(|&v| v == value)
+                && !t.eliminated.iter().any(|&v| v == value) {
+                return false
+            }
+        }
+
+        true
+    }
+
+    fn is_unique_in_col(&self, x: u8, y: u8, value: u8) -> bool {
+        for t in self.tiles.iter() {
+            if t.x == x
+                && t.y != y
+                && t.candidates.iter().any(|&v| v == value)
+                && !t.eliminated.iter().any(|&v| v == value) {
+                return false
+            }
+        }
+
+        true
+    }
+
+    fn is_unique_in_block(&self, x: u8, y: u8, value: u8) -> bool {
+        for t in self.tiles.iter() {
+            if !(t.x == x && t.y == y)
+                && t.is_in_same_block(x, y)
+                && t.candidates.iter().any(|&v| v == value)
+                && !t.eliminated.iter().any(|&v| v == value) {
+                return false
+            }
+        }
+
+        true
+    }
+
     /*
     pub fn print(&self) {
         for t in self.tiles.iter() {

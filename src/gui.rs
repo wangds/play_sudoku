@@ -431,7 +431,7 @@ impl<'a> Gui<'a> {
 
             WidgetType::Tile(x,y) => {
                 if let Some(t) = board.get(x,y) {
-                    Gui::draw_tile(gfx, scale, t, widget.rect);
+                    Gui::draw_tile(gfx, scale, board, t, widget.rect);
                 }
                 return;
             },
@@ -454,7 +454,8 @@ impl<'a> Gui<'a> {
         gfx.draw(res, widget.rect);
     }
 
-    fn draw_tile(gfx: &mut GfxLib, scale: u32, tile: &Tile, dst: Rect) {
+    fn draw_tile(gfx: &mut GfxLib, scale: u32,
+            board: &Board, tile: &Tile, dst: Rect) {
         // chequer pattern
         if (tile.x + tile.y) % 2 != 0 {
             let colour_rose = Color::RGB(0xC2, 0xBC, 0xBC);
@@ -481,14 +482,20 @@ impl<'a> Gui<'a> {
             let y_spacing: u32 = 3;
             let x0 = dst.x() + ((dst.width() - scale * 1) / 2 - scale * x_spacing) as i32;
             let y0 = dst.y() + ((dst.height() - scale * 1) / 2 - scale * y_spacing) as i32;
+            let colour_light_grey = Color::RGB(0x98, 0x98, 0x98);
             let colour_dark_grey = Color::RGB(0x58, 0x58, 0x58);
-            gfx.renderer.set_draw_color(colour_dark_grey);
 
             for &v in tile.candidates.iter().filter(
                     |&&v1| tile.eliminated.iter().all(|&v2| v1 != v2)) {
                 if 1 <= v && v <= 9 {
                     let x = (v - 1) % 3;
                     let y = 2 - (v - 1) / 3;
+
+                    if board.is_unique(tile, v) {
+                        gfx.renderer.set_draw_color(colour_dark_grey);
+                    } else {
+                        gfx.renderer.set_draw_color(colour_light_grey);
+                    }
 
                     gfx.renderer.fill_rect(Rect::new_unwrap(
                             x0 + (scale * x_spacing * x as u32) as i32,

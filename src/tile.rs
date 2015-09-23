@@ -36,6 +36,10 @@ impl Tile {
         }
     }
 
+    pub fn is_in_same_block(&self, x: u8, y: u8) -> bool {
+        self.x/3 == x/3 && self.y/3 == y/3
+    }
+
     pub fn is_valid_assign_value(&self, x: u8, y: u8, value: u8) -> bool {
         return x < 9 && y < 9 && (1 <= value && value <= 9)
             && (self.x != x
@@ -62,7 +66,7 @@ impl Tile {
         } else {
             if self.x == x
                 || self.y == y
-                || (self.x/3 == x/3 && self.y/3 == y/3) {
+                || self.is_in_same_block(x, y) {
                 vs.retain(|&v| v != value);
             }
 
@@ -135,6 +139,21 @@ impl Tile {
         }
     }
     */
+
+    pub fn is_remaining_candidate(&self, value: u8) -> bool {
+        let mut found = false;
+
+        for &v in self.candidates.iter().filter(
+                |&&v1| self.eliminated.iter().all(|&v2| v1 != v2)) {
+            if v == value {
+                found = true
+            } else {
+                return false
+            }
+        }
+
+        found
+    }
 
     /*
     pub fn print(&self) {
