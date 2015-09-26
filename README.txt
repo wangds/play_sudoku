@@ -66,7 +66,7 @@ Controls
     wheel - cycle through numbers
     mouse thumb buttons - undo, redo
 
-    F11 - toggle fullscreen
+    F11, f - toggle fullscreen
 
 
 Author

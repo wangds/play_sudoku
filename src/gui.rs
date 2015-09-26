@@ -273,15 +273,9 @@ impl<'a> Gui<'a> {
                 Event::Window { win_event_id: WindowEventId::Resized, data1, data2, .. } =>
                     self.resize = Some((data1 as u32, data2 as u32)),
 
-                Event::KeyDown { keycode: Some(Keycode::F11), .. } => {
-                    let mut window = self.gfx.renderer.window_mut().unwrap();
-
-                    if window.window_flags() & SDL_WINDOW_FULLSCREEN_DESKTOP != 0 {
-                        window.set_fullscreen(FullscreenType::Off).unwrap();
-                    } else {
-                        window.set_fullscreen(FullscreenType::Desktop).unwrap();
-                    }
-
+                Event::KeyDown { keycode: Some(Keycode::F), .. }
+                | Event::KeyDown { keycode: Some(Keycode::F11), .. } => {
+                    self.toggle_fullscreen();
                     return SudokuAction::NoOp
                 },
 
@@ -331,6 +325,16 @@ impl<'a> Gui<'a> {
                 let r = &w.rect;
                 r.x() <= x && x <= r.x() + (r.width() as i32)
                 && r.y() <= y && y <= r.y() + (r.height() as i32) })
+    }
+
+    fn toggle_fullscreen(&mut self) {
+        let mut window = self.gfx.renderer.window_mut().unwrap();
+
+        if window.window_flags() & SDL_WINDOW_FULLSCREEN_DESKTOP != 0 {
+            window.set_fullscreen(FullscreenType::Off).unwrap();
+        } else {
+            window.set_fullscreen(FullscreenType::Desktop).unwrap();
+        }
     }
 
     pub fn draw_to_screen(&mut self, board: &Board) {
