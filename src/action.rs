@@ -18,4 +18,6 @@ pub enum SudokuAction {
 
     // CrossOutValue(x,y,v)
     CrossOutValue(u8,u8,u8),
+
+    AutoFill,
 }

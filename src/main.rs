@@ -38,6 +38,7 @@ fn main() {
     }
 
     while !quit {
+        let mut maybe_new_b: Option<Board> = None;
         assert!(curr_history < h.len());
 
         match gui.read_input() {
@@ -68,31 +69,24 @@ fn main() {
                 },
 
             SudokuAction::AssignValue(x,y,v) =>
-                if let Some(new_b) = h[curr_history].assign_value(x, y, v, false) {
-                    while h.len() > curr_history + 1 {
-                        h.pop();
-                    }
-                    h.push(new_b);
-                    curr_history = h.len() - 1;
-                },
+                maybe_new_b = h[curr_history].assign_value(x, y, v, false),
 
             SudokuAction::UnassignValue(x,y) =>
-                if let Some(new_b) = h[curr_history].unassign_value(x, y) {
-                    while h.len() > curr_history + 1 {
-                        h.pop();
-                    }
-                    h.push(new_b);
-                    curr_history = h.len() - 1;
-                },
+                maybe_new_b = h[curr_history].unassign_value(x, y),
 
             SudokuAction::CrossOutValue(x,y,v) =>
-                if let Some(new_b) = h[curr_history].cross_out_value(x, y, v) {
-                    while h.len() > curr_history + 1 {
-                        h.pop();
-                    }
-                    h.push(new_b);
-                    curr_history = h.len() - 1;
-                }
+                maybe_new_b = h[curr_history].cross_out_value(x, y, v),
+
+            SudokuAction::AutoFill =>
+                maybe_new_b = h[curr_history].autofill()
+        }
+
+        if let Some(new_b) = maybe_new_b {
+            while h.len() > curr_history + 1 {
+                h.pop();
+            }
+            h.push(new_b);
+            curr_history = h.len() - 1;
         }
 
         gui.draw_to_screen(&h[curr_history]);

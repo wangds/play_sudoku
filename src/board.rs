@@ -144,6 +144,31 @@ impl Board {
         true
     }
 
+    pub fn autofill(&self) -> Option<Board> {
+        type AutoFillXYV = (u8,u8,u8);
+        let mut unique_list: Vec<AutoFillXYV> = Vec::new();
+
+        for t in self.tiles.iter() {
+            if t.assignment.is_some() {
+                continue
+            }
+
+            for &v in t.candidates.iter().filter(
+                    |&&v1| t.eliminated.iter().all(|&v2| v1 != v2)) {
+                if self.is_unique(t, v) {
+                    unique_list.push((t.x, t.y, v));
+                    break;
+                }
+            }
+        }
+
+        unique_list.iter().fold(None, |board, &(x,y,v)|
+                match board {
+                    None => self.assign_value(x, y, v, false),
+                    Some(b) => b.assign_value(x, y, v, false)
+                })
+    }
+
     /*
     pub fn print(&self) {
         for t in self.tiles.iter() {

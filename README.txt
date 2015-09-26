@@ -59,6 +59,7 @@ Controls
     x - redo
     c - pencil tool
     v - cross out tool
+    a - auto-fill
     1-9 - select number
 
     lmb - assign number, or cross out a possibility

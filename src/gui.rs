@@ -528,6 +528,8 @@ impl GuiState {
             Keycode::C => self.selected_brush = Brush::Pencil,
             Keycode::V => self.selected_brush = Brush::CrossOut,
 
+            Keycode::A => return SudokuAction::AutoFill,
+
             Keycode::Num1 => self.selected_value = 1,
             Keycode::Num2 => self.selected_value = 2,
             Keycode::Num3 => self.selected_value = 3,
