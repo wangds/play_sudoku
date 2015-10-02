@@ -28,7 +28,7 @@ const MIN_TOOLBAR_WIDTH: u32
     + TOOLBAR_UNDO_REDO_WIDTH + 2 // redo
     + TOOLBAR_BUTTON_WIDTH + 2 // pencil
     + TOOLBAR_BUTTON_WIDTH + 2 // erase
-    + (TOOLBAR_NUMBER_WIDTH - 1) * 9 // numbers
+    + (TOOLBAR_NUMBER_WIDTH - 1) * 9 + 1 // numbers
     + 3;
 
 const DEFAULT_SCREEN_WIDTH: u32 = 640;
@@ -163,7 +163,7 @@ impl<'a> Gui<'a> {
             if label_visible {
                 (toolbar_scale * (3 + TOOLBAR_BUTTON_WIDTH + 3)) as i32
             } else {
-                3
+                (toolbar_scale * 3) as i32
             };
         let x_redo = x_undo + (toolbar_scale * (TOOLBAR_UNDO_REDO_WIDTH + 2)) as i32;
         let x_1 = (screen_w - toolbar_scale * (toolbar_spacing * 9 + 4)) as i32;
