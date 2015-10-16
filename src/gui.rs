@@ -522,6 +522,7 @@ impl GuiState {
 
     fn on_key_down(&mut self, keycode: Keycode) -> SudokuAction {
         match keycode {
+            Keycode::N => return SudokuAction::New(None),
             Keycode::Z => return SudokuAction::Undo,
             Keycode::X => return SudokuAction::Redo,
 

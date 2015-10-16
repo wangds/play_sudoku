@@ -68,6 +68,7 @@ Controls
     mouse thumb buttons - undo, redo
 
     F11, f - toggle fullscreen
+    n - new game
 
 
 Author
