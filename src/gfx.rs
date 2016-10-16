@@ -47,38 +47,38 @@ impl<'a> GfxLib<'a> {
         let mut lib = HashMap::new();
 
         lib.insert(Res::ToolbarSudoku,
-                Rect::new_unwrap( 0,  0, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+                Rect::new( 0,  0, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
         lib.insert(Res::ToolbarUndo,
-                Rect::new_unwrap(54,  0, TOOLBAR_UNDO_REDO_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+                Rect::new(54,  0, TOOLBAR_UNDO_REDO_WIDTH, TOOLBAR_BUTTON_HEIGHT));
         lib.insert(Res::ToolbarRedo,
-                Rect::new_unwrap(64,  0, TOOLBAR_UNDO_REDO_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+                Rect::new(64,  0, TOOLBAR_UNDO_REDO_WIDTH, TOOLBAR_BUTTON_HEIGHT));
         lib.insert(Res::ToolbarActivePencil,
-                Rect::new_unwrap( 0, 10, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+                Rect::new( 0, 10, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
         lib.insert(Res::ToolbarInactivePencil,
-                Rect::new_unwrap( 0, 20, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+                Rect::new( 0, 20, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
         lib.insert(Res::ToolbarActiveCrossOut,
-                Rect::new_unwrap(54, 10, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+                Rect::new(54, 10, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
         lib.insert(Res::ToolbarInactiveCrossOut,
-                Rect::new_unwrap(54, 20, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+                Rect::new(54, 20, TOOLBAR_BUTTON_WIDTH, TOOLBAR_BUTTON_HEIGHT));
 
         for v in 1..9+1 {
             let x = ((TOOLBAR_NUMBER_WIDTH - 1) as i32) * ((v - 1) as i32);
 
             lib.insert(Res::ToolbarActiveNumber(v),
-                    Rect::new_unwrap(x, 30, TOOLBAR_NUMBER_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+                    Rect::new(x, 30, TOOLBAR_NUMBER_WIDTH, TOOLBAR_BUTTON_HEIGHT));
             lib.insert(Res::ToolbarInactiveNumber(v),
-                    Rect::new_unwrap(x, 40, TOOLBAR_NUMBER_WIDTH, TOOLBAR_BUTTON_HEIGHT));
+                    Rect::new(x, 40, TOOLBAR_NUMBER_WIDTH, TOOLBAR_BUTTON_HEIGHT));
         }
 
         for v in 1..9+1 {
             let x = (TILE_NUMBER_WIDTH * (v - 1)) as i32;
 
             lib.insert(Res::TileInit(v as u8),
-                    Rect::new_unwrap(x, 50, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT));
+                    Rect::new(x, 50, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT));
             lib.insert(Res::TileGuess(v as u8),
-                    Rect::new_unwrap(x, 65, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT));
+                    Rect::new(x, 65, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT));
             lib.insert(Res::TileConflict(v as u8),
-                    Rect::new_unwrap(x, 80, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT));
+                    Rect::new(x, 80, TILE_NUMBER_WIDTH, TILE_NUMBER_HEIGHT));
         }
 
         GfxLib {

@@ -175,7 +175,7 @@ impl<'a> Gui<'a> {
         if label_visible {
             ws.push(Widget {
                     mode: WidgetType::Label,
-                    rect: Rect::new_unwrap(
+                    rect: Rect::new(
                             (toolbar_scale * 3) as i32,
                             y,
                             toolbar_scale * TOOLBAR_BUTTON_WIDTH,
@@ -186,7 +186,7 @@ impl<'a> Gui<'a> {
         // undo
         ws.push(Widget {
                 mode: WidgetType::Undo,
-                rect: Rect::new_unwrap(x_undo, y,
+                rect: Rect::new(x_undo, y,
                         toolbar_scale * TOOLBAR_UNDO_REDO_WIDTH,
                         toolbar_scale * TOOLBAR_BUTTON_HEIGHT),
                 });
@@ -194,7 +194,7 @@ impl<'a> Gui<'a> {
         // redo
         ws.push(Widget {
                 mode: WidgetType::Redo,
-                rect: Rect::new_unwrap(x_redo, y,
+                rect: Rect::new(x_redo, y,
                         toolbar_scale * TOOLBAR_UNDO_REDO_WIDTH,
                         toolbar_scale * TOOLBAR_BUTTON_HEIGHT),
                 });
@@ -203,7 +203,7 @@ impl<'a> Gui<'a> {
         ws.push(Widget {
                 mode: WidgetType::ToolbarBrush(
                         Brush::Pencil, Res::ToolbarActivePencil, Res::ToolbarInactivePencil),
-                rect: Rect::new_unwrap(x_pencil, y,
+                rect: Rect::new(x_pencil, y,
                         toolbar_scale * TOOLBAR_BUTTON_WIDTH,
                         toolbar_scale * TOOLBAR_BUTTON_HEIGHT)
                 });
@@ -212,7 +212,7 @@ impl<'a> Gui<'a> {
         ws.push(Widget {
                 mode: WidgetType::ToolbarBrush(
                         Brush::CrossOut, Res::ToolbarActiveCrossOut, Res::ToolbarInactiveCrossOut),
-                rect: Rect::new_unwrap(x_crossout, y,
+                rect: Rect::new(x_crossout, y,
                         toolbar_scale * TOOLBAR_BUTTON_WIDTH,
                         toolbar_scale * TOOLBAR_BUTTON_HEIGHT)
                 });
@@ -224,7 +224,7 @@ impl<'a> Gui<'a> {
                 let y = board_y + (board_scale * (3 + board_y_spacing * row)) as i32;
                 ws.push(Widget {
                         mode: WidgetType::Tile(col as u8, row as u8),
-                        rect: Rect::new_unwrap(x, y,
+                        rect: Rect::new(x, y,
                                 board_scale * TILE_NUMBER_WIDTH,
                                 board_scale * TILE_NUMBER_HEIGHT)
                         })
@@ -237,7 +237,7 @@ impl<'a> Gui<'a> {
 
             ws.push(Widget {
                     mode: WidgetType::ToolbarNumber(v),
-                    rect: Rect::new_unwrap(x, y,
+                    rect: Rect::new(x, y,
                             toolbar_scale * TOOLBAR_NUMBER_WIDTH,
                             toolbar_scale * TOOLBAR_BUTTON_HEIGHT)
                     });
@@ -353,7 +353,7 @@ impl<'a> Gui<'a> {
         let colour_light_grey = Color::RGB(0x98, 0x98, 0x98);
         let colour_dark_grey = Color::RGB(0x58, 0x58, 0x58);
 
-        let toolbar_rect = Rect::new_unwrap(
+        let toolbar_rect = Rect::new(
                 0,
                 (screen_h - toolbar_scale * (TOOLBAR_BUTTON_HEIGHT + 6)) as i32,
                 screen_w,
@@ -402,7 +402,7 @@ impl<'a> Gui<'a> {
         let board_y_spacing = TILE_NUMBER_HEIGHT + 4;
         let (board_x, board_y) = Gui::calc_board_xy(screen_size);
 
-        let hline = Rect::new_unwrap(
+        let hline = Rect::new(
                 board_x,
                 board_y + (scale * board_y_spacing * y) as i32,
                 scale * (2 + board_x_spacing * 9),
@@ -417,7 +417,7 @@ impl<'a> Gui<'a> {
         let board_y_spacing = TILE_NUMBER_HEIGHT + 4;
         let (board_x, board_y) = Gui::calc_board_xy(screen_size);
 
-        let vline = Rect::new_unwrap(
+        let vline = Rect::new(
                 board_x + (scale * board_x_spacing * x) as i32,
                 board_y,
                 scale * 2,
@@ -464,7 +464,7 @@ impl<'a> Gui<'a> {
         if (tile.x + tile.y) % 2 != 0 {
             let colour_rose = Color::RGB(0xC2, 0xBC, 0xBC);
             gfx.renderer.set_draw_color(colour_rose);
-            gfx.renderer.fill_rect(Rect::new_unwrap(
+            gfx.renderer.fill_rect(Rect::new(
                     dst.x() - (scale * 1) as i32,
                     dst.y() - (scale * 1) as i32,
                     dst.width() + scale * 2,
@@ -501,7 +501,7 @@ impl<'a> Gui<'a> {
                         gfx.renderer.set_draw_color(colour_light_grey);
                     }
 
-                    gfx.renderer.fill_rect(Rect::new_unwrap(
+                    gfx.renderer.fill_rect(Rect::new(
                             x0 + (scale * x_spacing * x as u32) as i32,
                             y0 + (scale * y_spacing * y as u32) as i32,
                             scale * 1,
