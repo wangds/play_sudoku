@@ -90,7 +90,7 @@ impl<'a> Gui<'a> {
         let sdl = sdl2::init().unwrap();
         let video = sdl.video().unwrap();
 
-        sdl2_image::init(INIT_PNG);
+        let _ = sdl2_image::init(INIT_PNG);
 
         let screen_size = Gui::calc_screen_size_and_scale(
                 DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
@@ -102,7 +102,7 @@ impl<'a> Gui<'a> {
             .opengl()
             .build().unwrap();
 
-        window.set_minimum_size(MIN_SCREEN_WIDTH, MIN_SCREEN_HEIGHT);
+        let _ = window.set_minimum_size(MIN_SCREEN_WIDTH, MIN_SCREEN_HEIGHT);
 
         let renderer = window.renderer().build().unwrap();
 
@@ -381,10 +381,10 @@ impl<'a> Gui<'a> {
 
         // toolbar
         self.gfx.renderer.set_draw_color(colour_light_grey);
-        self.gfx.renderer.fill_rect(toolbar_rect);
+        let _ = self.gfx.renderer.fill_rect(toolbar_rect);
 
         self.gfx.renderer.set_draw_color(colour_dark_grey);
-        self.gfx.renderer.draw_rect(toolbar_rect);
+        let _ = self.gfx.renderer.draw_rect(toolbar_rect);
 
         // widgets
         for w in self.widgets.iter() {
@@ -408,7 +408,7 @@ impl<'a> Gui<'a> {
                 scale * (2 + board_x_spacing * 9),
                 scale * 2);
 
-        gfx.renderer.fill_rect(hline);
+        let _ = gfx.renderer.fill_rect(hline);
     }
 
     fn draw_board_vline(gfx: &mut GfxLib, screen_size: ScreenSize, x: u32) {
@@ -423,7 +423,7 @@ impl<'a> Gui<'a> {
                 scale * 2,
                 scale * (2 + board_y_spacing * 9));
 
-        gfx.renderer.fill_rect(vline);
+        let _ = gfx.renderer.fill_rect(vline);
     }
 
     fn draw_widget(gfx: &mut GfxLib, scale: u32,
@@ -464,7 +464,7 @@ impl<'a> Gui<'a> {
         if (tile.x + tile.y) % 2 != 0 {
             let colour_rose = Color::RGB(0xC2, 0xBC, 0xBC);
             gfx.renderer.set_draw_color(colour_rose);
-            gfx.renderer.fill_rect(Rect::new(
+            let _ = gfx.renderer.fill_rect(Rect::new(
                     dst.x() - (scale * 1) as i32,
                     dst.y() - (scale * 1) as i32,
                     dst.width() + scale * 2,
@@ -501,7 +501,7 @@ impl<'a> Gui<'a> {
                         gfx.renderer.set_draw_color(colour_light_grey);
                     }
 
-                    gfx.renderer.fill_rect(Rect::new(
+                    let _ = gfx.renderer.fill_rect(Rect::new(
                             x0 + (scale * x_spacing * x as u32) as i32,
                             y0 + (scale * y_spacing * y as u32) as i32,
                             scale * 1,
