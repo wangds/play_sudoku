@@ -11,8 +11,9 @@ use sdl2::mouse::Mouse;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::video::FullscreenType;
+
+#[cfg(feature = "png")]
 use sdl2_image;
-use sdl2_image::INIT_PNG;
 
 use action::SudokuAction;
 use board::Board;
@@ -90,7 +91,7 @@ impl<'a> Gui<'a> {
         let sdl = sdl2::init().unwrap();
         let video = sdl.video().unwrap();
 
-        let _ = sdl2_image::init(INIT_PNG);
+        init_png();
 
         let screen_size = Gui::calc_screen_size_and_scale(
                 DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
@@ -581,4 +582,15 @@ impl GuiState {
     fn on_wheel(&mut self, delta: i32) {
         self.selected_value = max(1, min(self.selected_value as i32 + delta, 9)) as u8;
     }
+}
+
+/*--------------------------------------------------------------*/
+
+#[cfg(not(feature = "png"))]
+fn init_png() {
+}
+
+#[cfg(feature = "png")]
+fn init_png() {
+    let _ = sdl2_image::init(sdl2_image::INIT_PNG);
 }
