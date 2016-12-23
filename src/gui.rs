@@ -5,9 +5,9 @@ use sdl2;
 use sdl2::EventPump;
 use sdl2::TimerSubsystem;
 use sdl2::event::Event;
-use sdl2::event::WindowEventId;
+use sdl2::event::WindowEvent;
 use sdl2::keyboard::Keycode;
-use sdl2::mouse::Mouse;
+use sdl2::mouse::MouseButton;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::video::FullscreenType;
@@ -271,7 +271,7 @@ impl<'a> Gui<'a> {
                 Event::Quit {..} =>
                     return SudokuAction::Quit,
 
-                Event::Window { win_event_id: WindowEventId::Resized, data1, data2, .. } =>
+                Event::Window { win_event: WindowEvent::Resized(data1, data2), .. } =>
                     self.resize = Some((data1 as u32, data2 as u32)),
 
                 Event::KeyDown { keycode: Some(Keycode::F), .. }
@@ -286,7 +286,7 @@ impl<'a> Gui<'a> {
                         a => return a
                     },
 
-                Event::MouseButtonDown { mouse_btn: Mouse::Left, x, y, .. } =>
+                Event::MouseButtonDown { mouse_btn: MouseButton::Left, x, y, .. } =>
                     if let Some(w) = Gui::find_widget(&self.widgets, x, y) {
                         match self.state.on_lmb(&w) {
                             SudokuAction::NoOp => return SudokuAction::NoOp,
@@ -294,7 +294,7 @@ impl<'a> Gui<'a> {
                         }
                     },
 
-                Event::MouseButtonDown { mouse_btn: Mouse::Right, x, y, .. } =>
+                Event::MouseButtonDown { mouse_btn: MouseButton::Right, x, y, .. } =>
                     if let Some(w) = Gui::find_widget(&self.widgets, x, y) {
                         match self.state.on_rmb(&w) {
                             SudokuAction::NoOp => {},
@@ -302,10 +302,10 @@ impl<'a> Gui<'a> {
                         }
                     },
 
-                Event::MouseButtonDown { mouse_btn: Mouse::Unknown(8), .. } =>
+                Event::MouseButtonDown { mouse_btn: MouseButton::X1, .. } =>
                     return SudokuAction::Undo,
 
-                Event::MouseButtonDown { mouse_btn: Mouse::Unknown(9), .. } =>
+                Event::MouseButtonDown { mouse_btn: MouseButton::X2, .. } =>
                     return SudokuAction::Redo,
 
                 Event::MouseWheel { y, .. } =>
